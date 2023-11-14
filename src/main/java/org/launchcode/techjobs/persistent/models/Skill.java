@@ -35,4 +35,5 @@ public class Skill extends AbstractEntity {
     public Skill() {
         //no-arg, different name?
     }
+
 }

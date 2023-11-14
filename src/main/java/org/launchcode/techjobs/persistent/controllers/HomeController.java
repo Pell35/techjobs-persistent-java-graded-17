@@ -33,17 +33,15 @@ public class HomeController {
 
     @RequestMapping("/")
     public String index(Model model) {
-        model.addAttribute("employer", employerRepository.findAll());
-        model.addAttribute("skill", skillRepository.findAll());
-        model.addAttribute("job",jobRepository.findAll());
+        model.addAttribute("jobs",jobRepository.findAll());
         return "index";
     }
 
     @GetMapping("add")
     public String displayAddJobForm(Model model) {
-	model.addAttribute("employer", employerRepository.findAll());
-    model.addAttribute("skill", skillRepository.findAll());
-        model.addAttribute("job",new Job());
+	model.addAttribute("employers", employerRepository.findAll());
+    model.addAttribute("skills", skillRepository.findAll());
+        model.addAttribute(new Job());
         return "add";
     }
 
@@ -54,22 +52,23 @@ public class HomeController {
         List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
 
         if (errors.hasErrors()) {
-	    model.addAttribute("job", "Add Job");
-            model.addAttribute("employer", employerRepository.findAll());
-            model.addAttribute("skill", skillRepository.findAll());
             return "add";
         }
         newJob.setSkills(skillObjs);
         newJob.setEmployer(employer);
         jobRepository.save(newJob);
-        skillRepository.saveAll(skillObjs);
-        employerRepository.save(employer);
         return "redirect:";
     }
 
-    @GetMapping("view/{jobId}")
+    @GetMapping("view/{jobId}") //Optional, is empty,and get, cast into job, if doesn't redirect /
     public String displayViewJob(Model model, @PathVariable int jobId) {
-            model.addAttribute("job", jobRepository.findById(jobId));
+        Optional<Job> optionalJob = jobRepository.findById((jobId));
+        if(optionalJob.isPresent()){
+            model.addAttribute("job", optionalJob.get());
+        }
+        else{
+            return "Redirect:/";
+        };
             return "view";
     }
 
